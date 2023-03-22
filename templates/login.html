@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block content %}
+<form class="form" action="/login" method="post">
+    {% if error_message != '' %}
+    <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+    <div class="field-block">
+        <label class="field-block__label">Username:</label>
+        <input class="field-block__input input" type="text" name="name">
+        {% if user_name_error != '' %}
+        <div class="field-block__error">{{ user_name_error }}</div>
+        {% endif %}
+    </div>
+    <div class="field-block">
+        <label class="field-block__label">Password:</label>
+        <input class="field-block__input input" type="password" name="password">
+    </div>
+    <button class="form__button">LOG IN</button>
+    <a href="/">Cancel</a>
+</form>
+{% endblock %}

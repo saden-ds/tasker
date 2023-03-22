@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<table width="100%">
+	<tr>
+		<th>Task</th>
+		<th>Name</th>
+		<th>Delete task</th>
+	</tr>
+	{% for task in tasks %}
+	<tr>
+		<td>{{ task['task_name'] }}</td>
+		<td>{{ task['user_name'] }}</td>
+		<td><a href="/tasks/{{task['id']}}/delete">Delete</a></td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}

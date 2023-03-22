@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<form class='form' action="/tasks/create" method="post">
+    <h1>New task</h1>
+    <div class="field-block">
+        <label class='field-block__label'>Name:</label>
+        <input class='field-block__input input' type="text" name="name">
+    </div>
+    <button class="form__button">Save</button>
+    <a href="/">Cancel</a>
+</form>
+{% endblock %}
