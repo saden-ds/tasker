@@ -24,7 +24,7 @@ def index():
 	cursor = cnx.cursor(dictionary=True)
 
 	query = (
-		"select tasks.name as task_name, users.name as user_name, tasks.id "
+		"select tasks.name as task_name, users.name as user_name, tasks.id, tasks.started_at, tasks.finished_at "
 		"from tasks "
 		"left join users on users.id = tasks.user_id "
 		"where users.id = %s"
@@ -33,8 +33,6 @@ def index():
 	cursor.execute(query, (session['user_id'],))
 
 	tasks = cursor.fetchall()
-
-	cursor.close()
 
 	cnx.close()
 
@@ -92,6 +90,72 @@ def task_delete(id):
 	cnx.close()
 
 	return redirect('/')
+
+@app.route ('/tasks/<int:id>/start')
+def task_start(id):
+	if 'user_id' not in session:
+		return redirect('/login')
+
+	cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
+
+	cursor = cnx.cursor()
+
+	query = (
+		"UPDATE tasks "
+		"SET tasks.finished_at = now() "
+		"WHERE tasks.user_id = %s "
+		"AND tasks.started_at IS NOT NULL "
+		"AND tasks.finished_at IS NULL"
+	)
+	data = (session['user_id'],)
+
+	cursor.execute(query, data)
+	cursor.close()
+
+	cursor = cnx.cursor()
+
+	query = (
+		"UPDATE tasks "
+		"SET tasks.started_at = now() "
+		"WHERE tasks.id = %s "
+	)
+	data = (id,)
+
+	cursor.execute(query, data)
+
+	action_id = cursor.lastrowid
+
+	cursor.close()
+	cnx.close()
+
+	return redirect('/')
+
+
+@app.route ('/tasks/<int:id>/stop')
+def task_stop(id):
+	if 'user_id' not in session:
+		return redirect('/login')
+
+	cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
+
+	cursor = cnx.cursor()
+
+	query = (
+		"UPDATE tasks "
+		"SET tasks.finished_at = now() "
+		"WHERE tasks.id = %s "
+	)
+	data = (id,)
+
+	cursor.execute(query, data)
+
+	action_id = cursor.lastrowid
+
+	cursor.close()
+	cnx.close()
+
+	return redirect('/')
+	
 	
 @app.route ('/login', methods=['GET', 'POST'])
 def login():
@@ -143,6 +207,16 @@ def logout():
 	session.pop('user_name')
 
 	return redirect('/login')
+
+@app.route ('/plan')
+def plan():
+	if 'user_id' not in session:
+		return redirect('/login')
+
+	return "sasa"
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 

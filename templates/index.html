@@ -4,13 +4,29 @@
 <table width="100%">
 	<tr>
 		<th>Task</th>
-		<th>Name</th>
+		<th>Start</th>
+		<th>Finish</th>
+		<th>TIME</th>
+		<th>Command</th>
 		<th>Delete task</th>
 	</tr>
 	{% for task in tasks %}
 	<tr>
 		<td>{{ task['task_name'] }}</td>
-		<td>{{ task['user_name'] }}</td>
+		<td>{{ task['started_at'] }}</td>
+		<td>{{ task['finished_at'] }}</td>
+		<td>
+			{% if task['started_at'] and task['finished_at'] %}
+			{{task['finished_at'] - task['started_at']}}
+			{% endif %}
+		</td>
+		<td>
+			{% if task['started_at'] and not task['finished_at'] %}
+			<a href="/tasks/{{task['id']}}/stop">Stop</a>
+			{% elif not task['finished_at'] %}
+			<a href="/tasks/{{task['id']}}/start">Start</a>
+			{% endif %}
+		</td>
 		<td><a href="/tasks/{{task['id']}}/delete">Delete</a></td>
 	</tr>
 	{% endfor %}
