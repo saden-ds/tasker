@@ -14,11 +14,6 @@
 			font-family: Tahoma;
 		}
 
-		
-		.aaaa {
-			color: green;
-		}
-
 		table {
 			border-collapse: collapse;
 		}
@@ -136,6 +131,10 @@
 				<li class="navigation__item"><a class="navigation__anchor" href="/plan">Plan</a></li>
 				<li class="navigation__item"><a class="navigation__anchor" href="/tasks/new">New tasks</a></li>
 				<li class="navigation__item"><a class="navigation__anchor" href="/logout">LOG OUT</a></li>
+			</ul>
+			{% else %}
+			<ul class="navigation">
+				<li class="navigation__item"><a class="navigation__anchor" href="/signup">Sign Up</a></li>
 			</ul>
 			{% endif %}
 		</div>
