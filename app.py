@@ -53,7 +53,7 @@ def task_create():
 	name = request.form.get('name');
 
 	if name == '':
-		return render_template('task_form.html', error_message = 'No task specified') 
+		return render_template('task_form.html', error_message = 'No task specified') ######
 
 	cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
 	cursor = cnx.cursor()
@@ -226,11 +226,16 @@ def signup():
 	if request.method == 'POST':
 		name = request.form.get('name')
 		password = request.form.get('password')
+		password_confirm = request.form.get('password_confirm')
 
 		if name == '':
 			error = 'Error, please check'
 		elif password == '':
 			error = 'Error, no password specified'
+		elif len(password) < 8:
+			error = 'Not enough characters'
+		elif password != password_confirm:
+			error = 'Passwords didn’t match. Try again.'
 
 		if error != '':
 			return render_template('signup.html', error_message = error, name = name)
