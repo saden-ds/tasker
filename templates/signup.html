@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block content %}
+<form class="form" action="/signup" method="post">
+    {% if error_message != '' %}
+    <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+    <h2>Create your Account</h2>
+    <div class="field-block">
+        <label class="field-block__label">Username:</label>
+        <input value="{{name}}" class="field-block__input input" type="text" name="name">
+    </div>
+    <div class="field-block">
+        <label class="field-block__label">Password:</label>
+        <input class="field-block__input input" type="password" name="password">
+        <div class="field-block__hint">Use 8 or more characters with a mix of letters, numbers & symbols</div>
+    </div>
+    <div class="field-block">
+        <label class="field-block__label">Password confirm:</label>
+        <input class="field-block__input input" type="password" name="password_confirm">
+    </div>
+    <button class="form__button">SIGN UP</button>
+    <a href="/login">Cancel</a>
+</form>
+{% endblock %}

@@ -10,8 +10,10 @@ app.secret_key = 'qweqeqweqe131qwewehgfgq'
 def set_global_html_variable_values():
     if 'user_id' in session:
         is_signet_in = True
+        user_name = session['user_name']
     else:
         is_signet_in = False
+        user_name = ''
     
     return {'is_signet_in': is_signet_in}
 
@@ -43,7 +45,7 @@ def task_new():
 	if 'user_id' not in session:
 		return redirect('/login')
 
-	return render_template('task_form.html') 
+	return render_template('task_form.html', error_message = '') 
 
 @app.route ('/tasks/create', methods=['post'])
 def task_create():
@@ -53,7 +55,7 @@ def task_create():
 	name = request.form.get('name');
 
 	if name == '':
-		return 'Error, task name not specified'
+		return render_template('task_form.html', error_message = 'No task specified') ######
 
 	cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
 	cursor = cnx.cursor()
@@ -203,33 +205,110 @@ def login():
 
 @app.route ('/logout')
 def logout():
-	session.pop('user_id')
-	session.pop('user_name')
+	if 'user_id' in session:
+		session.pop('user_id')
+		session.pop('user_name')
 
 	return redirect('/login')
 
-@app.route ('/plan')
-def plan():
+@app.route ('/pass_change', methods=['GET', 'POST'])
+def pass_change():
+	error = ''
+
 	if 'user_id' not in session:
 		return redirect('/login')
 
-	return "sasa"
+	if request.method == 'POST':
+		name = request.form.get('name')
+		password = request.form.get('password')
+		password_confirm = request.form.get('password_confirm')
+		
+		if password == '':
+			error = 'Error, no password specified'
+		elif len(password) < 8:
+			error = 'Not enough characters'
+		elif password != password_confirm:
+			error = 'Passwords didn’t match. Try again.'
+
+		if error != '':
+			return render_template('pass_change.html', error_message = error)
+		'''
+		cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
+		cursor = cnx.cursor(dictionary=True)
+
+		query = (
+				"insert into users "
+				"(name, password) "
+				"values (%s, %s)"
+			)
+		'''
+	
+	else: 
+		return render_template('pass_change.html', error_message = error)
+
+@app.route ('/signup', methods=['GET', 'POST'])
+def signup():
+
+	error = ''
+	user_name_error = ''
+	name = ''
+
+	if request.method == 'POST':
+		name = request.form.get('name')
+		password = request.form.get('password')
+		password_confirm = request.form.get('password_confirm')
+
+		if name == '':
+			error = 'Error, please check'
+		elif password == '':
+			error = 'Error, no password specified'
+		elif len(password) < 8:
+			error = 'Not enough characters'
+		elif password != password_confirm:
+			error = 'Passwords didn’t match. Try again.'
+
+		if error != '':
+			return render_template('signup.html', error_message = error, name = name)
+
+		cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
+		cursor = cnx.cursor(dictionary=True)
+
+		cursor.execute('select name from users where name = %s', (name,))
+
+		row = cursor.fetchone()
+
+		cursor.close()
+
+		if row and row['name'] == name:
+			return render_template('signup.html', error_message = 'User already exists', name = name)
+		else:
+			cursor = cnx.cursor()
+
+			query = (
+				"insert into users "
+				"(name, password) "
+				"values (%s, %s)"
+			)
+
+			data = (name, password)
+
+			cursor.execute(query, data)
+
+			id = cursor.lastrowid
+
+			cursor.close()
+
+			cnx.close()
+
+			session['user_id'] = id;
+			session['user_name'] = name;
+
+			return redirect('/')
+	else:
+		return render_template('signup.html', error_message = error, name = name)
 
 if __name__ == '__main__':
     app.run(debug=True)
 
 
 
-
-
-'''
-@app.route ('/')
-def hello():
-	return render_template('index.html')
-
-
-
-@app.route ('/test')
-def test():
-	return  '<h1>Test page 2</h1>' + '<a href="/">main page</a>'
-'''
