@@ -15,7 +15,10 @@ def set_global_html_variable_values():
         is_signet_in = False
         user_name = ''
     
-    return {'is_signet_in': is_signet_in}
+    return {
+    	'is_signet_in': is_signet_in,
+    	'user_name': user_name
+    }
 
 @app.route ('/')
 def index():
@@ -38,7 +41,7 @@ def index():
 
 	cnx.close()
 
-	return render_template('index.html', tasks = tasks, user_name = session['user_name'])
+	return render_template('index.html', tasks = tasks)
 
 @app.route ('/tasks/new')
 def task_new():
@@ -151,8 +154,6 @@ def task_stop(id):
 
 	cursor.execute(query, data)
 
-	action_id = cursor.lastrowid
-
 	cursor.close()
 	cnx.close()
 
@@ -211,7 +212,7 @@ def logout():
 
 	return redirect('/login')
 
-@app.route ('/pass_change', methods=['GET', 'POST'])
+@app.route ('/pass/edit', methods=['GET', 'POST'])
 def pass_change():
 	error = ''
 
@@ -219,7 +220,6 @@ def pass_change():
 		return redirect('/login')
 
 	if request.method == 'POST':
-		name = request.form.get('name')
 		password = request.form.get('password')
 		password_confirm = request.form.get('password_confirm')
 		
@@ -232,17 +232,24 @@ def pass_change():
 
 		if error != '':
 			return render_template('pass_change.html', error_message = error)
-		'''
+		
 		cnx = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='tasker')
 		cursor = cnx.cursor(dictionary=True)
 
 		query = (
-				"insert into users "
-				"(name, password) "
-				"values (%s, %s)"
-			)
-		'''
-	
+			"update users "
+			"set password = %s "
+			"where id = %s "
+		)
+
+		data = (password, session["user_id"])
+
+		cursor.execute(query, data)
+
+		cursor.close()
+		cnx.close()
+		
+		return redirect('/')
 	else: 
 		return render_template('pass_change.html', error_message = error)
 
