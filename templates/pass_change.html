@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
-<form class="form" action="/pass_change" method="post">
+<form class="form" action="/pass/edit" method="post">
     {% if error_message != '' %}
     <div class="error-message">{{ error_message }}</div>
     {% endif %}
